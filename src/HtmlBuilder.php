@@ -426,49 +426,24 @@ class HtmlBuilder
      */
     public function attributes(array|null $attributes, string $input_type = null): string
     {
-        $defaultAttributes = config('html-forms.default_attributes', []);
-        $all_default_attributes = $defaultAttributes['all'] ?? [];
-        $specific_attributes = $defaultAttributes[$input_type] ?? [];
-
-        foreach([$all_default_attributes, $specific_attributes] as $mergeable_attributes) {
-            foreach ($mergeable_attributes as $attribute_name => $attribute_value){
-                if(empty($attribute_value)){
-                    continue;
-                }
-                if ($attribute_name === "class") {
-                    $attributes['class'] = [...$attribute_value, ...$attributes['class'] ?? []];
-                } else {
-                    $attributes[$attribute_name] = is_array($attribute_value) && !$attribute_value[0]
-                        ? array_key_first($attribute_value)
-                        : $attribute_value;
-                }
-            }
-        }
-
-        if (empty($attributes)) {
+        if(is_null($attributes)){
             return '';
         }
 
-        $ignoreEmptyAttributes = config('html-forms.ignore_empty_attributes', []);
-        $ignoreEmptyAll = $ignoreEmptyAttributes['all'] ?? [];
-        $ignoreEmptySpecific = $ignoreEmptyAttributes[$input_type] ?? [];
-        $allowedBooleanValues = config('html-forms.allowed_boolean_values', []);
-        $ignoreAllEmptyAttributes = config('html-forms.ignore_all_empty_attributes', []);
-
         $html = [];
-        $ignoreables = array_merge($ignoreEmptyAll, $ignoreEmptySpecific);
-        $allow_boolean = in_array($input_type, $allowedBooleanValues);
+        $ignoreables = array_merge(config('html-forms.ignore_empty_attributes.all', []), config('html-forms.ignore_empty_attributes.' . $input_type, []));
+        $allow_boolean = in_array($input_type, config('html-forms.allowed_boolean_values'));
 
         foreach ($attributes as $key => $value) {
-            $ignore_empty = $ignoreAllEmptyAttributes || in_array($key, $ignoreables);
+            $ignore_empty = config('html-forms.ignore_all_empty_attributes') || in_array($key, $ignoreables);
             $element = $this->attributeElement($key, $value, $ignore_empty, $allow_boolean);
 
-            if (!empty($element)) {
+            if ($element !== '') {
                 $html[] = $element;
             }
         }
 
-        return empty($html) ? '' : ' ' . implode(' ', $html);
+        return count($html) > 0 ? ' ' . implode(' ', $html) : '';
     }
 
     /**
@@ -500,7 +475,7 @@ class HtmlBuilder
             return 'class="' . implode(' ', $value) . '"';
         }
 
-        if($ignore_empty || !empty($value) || ($allow_boolean && $value == "0")){
+        if($ignore_empty || $value !== '' || ($allow_boolean && $value == "0")){
             return $key . '="' . e($value ?? '', false) . '"';
         }
         return null;
