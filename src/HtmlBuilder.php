@@ -463,7 +463,7 @@ class HtmlBuilder
             $ignore_empty = $ignoreAllEmptyAttributes || in_array($key, $ignoreables);
             $element = $this->attributeElement($key, $value, $ignore_empty, $allow_boolean);
 
-            if (!empty($element)) {
+            if ($element !== '') {
                 $html[] = $element;
             }
         }
@@ -500,7 +500,7 @@ class HtmlBuilder
             return 'class="' . implode(' ', $value) . '"';
         }
 
-        if($ignore_empty || !empty($value) || ($allow_boolean && $value == "0")){
+        if($ignore_empty || $value !== '' || ($allow_boolean && $value == "0")){
             return $key . '="' . e($value ?? '', false) . '"';
         }
         return null;
