@@ -148,6 +148,7 @@ class FormBuilder
             $method_attributes = $method;
             $method = Arr::get($method, 'value', 'post');
         }
+        $attributes['data-method'] = $method;
 
         // We need to extract the proper method from the attributes. If the method is
         // something other than GET or POST we'll use POST since we will spoof the
