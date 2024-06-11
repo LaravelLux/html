@@ -14,7 +14,7 @@ if (! function_exists('link_to')) {
      *
      * @return string
      */
-    function link_to(string $url, string|null $title = null, array $attributes = [], bool|null $secure = null, bool $escape = true): string
+    function link_to(string $url, string|null $title = null, array $attributes = [], bool|null $secure = null, bool $escape = true): HtmlString|string
     {
         return app('html')->link($url, $title, $attributes, $secure, $escape);
     }
@@ -48,7 +48,7 @@ if (! function_exists('link_to_route')) {
      *
      * @return string
      */
-    function link_to_route(string $name, string $title = null, mixed $parameters = [], array $attributes = []): string
+    function link_to_route(string $name, string $title = null, mixed $parameters = [], array $attributes = []): HtmlString|string
     {
         return app('html')->linkRoute($name, $title, $parameters, $attributes);
     }
@@ -65,7 +65,7 @@ if (! function_exists('link_to_action')) {
      *
      * @return string
      */
-    function link_to_action(string $action, string $title = null, array $parameters = [], array $attributes = []): string
+    function link_to_action(string $action, string $title = null, array $parameters = [], array $attributes = []): HtmlString|string
     {
         return app('html')->linkAction($action, $title, $parameters, $attributes);
     }
