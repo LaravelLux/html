@@ -772,7 +772,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function getSelectOption(string|array|Collection $display, string $value, string|array|Collection|null $selected, array $attributes = [], array $optgroupAttributes = []): HtmlString|string
+    public function getSelectOption(string|array|Collection $display, string|int $value, string|array|Collection|null $selected, array $attributes = [], array $optgroupAttributes = []): HtmlString|string
     {
         if (is_iterable($display)) {
             return $this->optionGroup($display, $value, $selected, $optgroupAttributes, $attributes);
@@ -818,7 +818,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    protected function option(string|null $display, string $value, string|array|Collection|null $selected = null, array $attributes = []): HtmlString|string
+    protected function option(string|null $display, string|int $value, string|array|Collection|null $selected = null, array $attributes = []): HtmlString|string
     {
         $selected = $this->getSelectedValue($value, $selected);
 
