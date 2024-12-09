@@ -75,7 +75,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function script(string $url, array $attributes = [], bool $secure = null): HtmlString|string
+    public function script(string $url, array $attributes = [], bool|null $secure = null): HtmlString|string
     {
         $attributes['src'] = $this->url->asset($url, $secure);
 
@@ -91,7 +91,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function style(string $url, array $attributes = [], bool $secure = null): HtmlString|string
+    public function style(string $url, array $attributes = [], bool|null $secure = null): HtmlString|string
     {
         $defaults = ['media' => 'all', 'type' => 'text/css', 'rel' => 'stylesheet'];
 
@@ -112,7 +112,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function image(string $url, string $alt = null, array $attributes = [], bool $secure = null): HtmlString|string
+    public function image(string $url, string|null $alt = null, array $attributes = [], bool|null $secure = null): HtmlString|string
     {
         $attributes['alt'] = $alt;
 
@@ -129,7 +129,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function favicon(string $url, array $attributes = [], bool $secure = null): HtmlString|string
+    public function favicon(string $url, array $attributes = [], bool|null $secure = null): HtmlString|string
     {
         $defaults = ['rel' => 'shortcut icon', 'type' => 'image/x-icon'];
 
@@ -151,7 +151,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function link(string $url, string $title = null, array $attributes = [], bool $secure = null, bool $escape = true): HtmlString|string
+    public function link(string $url, string|null $title = null, array $attributes = [], bool|null $secure = null, bool $escape = true): HtmlString|string
     {
         $url = $this->url->to($url, [], $secure);
 
@@ -176,7 +176,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function secureLink(string $url, string $title = null, array $attributes = [], bool $escape = true): HtmlString|string
+    public function secureLink(string $url, string|null $title = null, array $attributes = [], bool $escape = true): HtmlString|string
     {
         return $this->link($url, $title, $attributes, true, $escape);
     }
@@ -192,7 +192,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function linkAsset(string $url, string $title = null, array $attributes = [], bool $secure = null, bool $escape = true): HtmlString|string
+    public function linkAsset(string $url, string|null $title = null, array $attributes = [], bool|null $secure = null, bool $escape = true): HtmlString|string
     {
         $url = $this->url->asset($url, $secure);
 
@@ -209,7 +209,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function linkSecureAsset(string $url, string $title = null, array $attributes = [], bool $escape = true): HtmlString|string
+    public function linkSecureAsset(string $url, string|null $title = null, array $attributes = [], bool $escape = true): HtmlString|string
     {
         return $this->linkAsset($url, $title, $attributes, true, $escape);
     }
@@ -226,7 +226,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function linkRoute(string $name, string $title = null, mixed $parameters = [], array $attributes = [], bool $secure = null, bool $escape = true): HtmlString|string
+    public function linkRoute(string $name, string|null $title = null, mixed $parameters = [], array $attributes = [], bool|null $secure = null, bool $escape = true): HtmlString|string
     {
         return $this->link($this->url->route($name, $parameters), $title, $attributes, $secure, $escape);
     }
@@ -243,7 +243,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function linkAction(string $action, string $title = null, array $parameters = [], array $attributes = [], bool $secure = null, bool $escape = true): HtmlString|string
+    public function linkAction(string $action, string|null $title = null, array $parameters = [], array $attributes = [], bool|null $secure = null, bool $escape = true): HtmlString|string
     {
         return $this->link($this->url->action($action, $parameters), $title, $attributes, $secure, $escape);
     }
@@ -258,7 +258,7 @@ class HtmlBuilder
      *
      * @return HtmlString|string
      */
-    public function mailto(string $email, string $title = null, array $attributes = [], bool $escape = true): HtmlString|string
+    public function mailto(string $email, string|null $title = null, array $attributes = [], bool $escape = true): HtmlString|string
     {
         $email = $this->email($email);
 
@@ -424,7 +424,7 @@ class HtmlBuilder
      * @param string|null $input_type
      * @return string
      */
-    public function attributes(array|null $attributes, string $input_type = null): string
+    public function attributes(array|null $attributes, string|null $input_type = null): string
     {
         $defaultAttributes = config('html-forms.default_attributes', []);
         $all_default_attributes = $defaultAttributes['all'] ?? [];

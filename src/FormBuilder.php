@@ -273,7 +273,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function label(string $name, string $value = null, array|null $options = [], bool|null $escape_html = true): HtmlString|string
+    public function label(string $name, string|null $value = null, array|null $options = [], bool|null $escape_html = true): HtmlString|string
     {
         $this->labels[] = $name;
 
@@ -311,7 +311,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function input(string $type, string|null $name, string $value = null, array $options = []): string|HtmlString
+    public function input(string $type, string|null $name, string|null $value = null, array $options = []): string|HtmlString
     {
         $this->type = $type;
 
@@ -347,7 +347,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function text(string $name, string $value = null, array $options = []): string|HtmlString
+    public function text(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('text', $name, $value, $options);
     }
@@ -374,7 +374,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function range(string $name, string $value = null, array $options = []): string|HtmlString
+    public function range(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('range', $name, $value, $options);
     }
@@ -388,7 +388,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function hidden(string $name, string $value = null, array $options = []): string|HtmlString
+    public function hidden(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('hidden', $name, $value, $options);
     }
@@ -402,7 +402,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function search(string $name, string $value = null, array $options = []): string|HtmlString
+    public function search(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('search', $name, $value, $options);
     }
@@ -416,7 +416,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function email(string $name, string $value = null, array $options = []): string|HtmlString
+    public function email(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('email', $name, $value, $options);
     }
@@ -430,7 +430,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function tel(string $name, string $value = null, array $options = []): string|HtmlString
+    public function tel(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('tel', $name, $value, $options);
     }
@@ -444,7 +444,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function number(string $name, string $value = null, array $options = []): string|HtmlString
+    public function number(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('number', $name, $value, $options);
     }
@@ -458,7 +458,7 @@ class FormBuilder
      *
      * @return string|HtmlString
      */
-    public function date(string $name, string|DateTimeInterface $value = null, array $options = []): string|HtmlString
+    public function date(string $name, string|DateTimeInterface|null $value = null, array $options = []): string|HtmlString
     {
         $value ??= $this->getValueAttribute($name, $value);
 
@@ -478,7 +478,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function datetime(string $name, string|DateTimeInterface $value = null, array $options = []): HtmlString|string
+    public function datetime(string $name, string|DateTimeInterface|null $value = null, array $options = []): HtmlString|string
     {
         if ($value instanceof DateTimeInterface) {
             $value = $value->format(DateTimeInterface::RFC3339);
@@ -497,7 +497,7 @@ class FormBuilder
      * @return HtmlString|string
      * @noinspection PhpUnused
      */
-    public function datetimeLocal(string $name, string|DateTimeInterface $value = null, array $options = []): HtmlString|string
+    public function datetimeLocal(string $name, string|DateTimeInterface|null $value = null, array $options = []): HtmlString|string
     {
         if ($value instanceof DateTimeInterface) {
             $value = $value->format('Y-m-d\TH:i');
@@ -515,7 +515,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function time(string $name, string|DateTimeInterface $value = null, array $options = []): HtmlString|string
+    public function time(string $name, string|DateTimeInterface|null $value = null, array $options = []): HtmlString|string
     {
         if ($value instanceof DateTimeInterface) {
             $value = $value->format('H:i');
@@ -533,7 +533,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function url(string $name, string $value = null, array $options = []): HtmlString|string
+    public function url(string $name, string|null $value = null, array $options = []): HtmlString|string
     {
         return $this->input('url', $name, $value, $options);
     }
@@ -547,7 +547,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function week(string $name, string|DateTimeInterface $value = null, array $options = []): HtmlString|string
+    public function week(string $name, string|DateTimeInterface|null $value = null, array $options = []): HtmlString|string
     {
         if ($value instanceof DateTimeInterface) {
             $value = $value->format('Y-\WW');
@@ -578,7 +578,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function textarea(string $name, string $value = null, array $options = []): HtmlString|string
+    public function textarea(string $name, string|null $value = null, array $options = []): HtmlString|string
     {
         $this->type = 'textarea';
 
@@ -659,7 +659,7 @@ class FormBuilder
     public function select(
         string      $name,
         array|Collection       $list = [],
-        bool|string|array|Collection $selected = null,
+        bool|string|array|Collection|null $selected = null,
         array       $selectAttributes = [],
         array       $optionsAttributes = [],
         array       $optgroupsAttributes = []
@@ -717,7 +717,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function selectRange(string $name, string $begin, string $end, string $selected = null, array $options = []): HtmlString|string
+    public function selectRange(string $name, string $begin, string $end, string|null $selected = null, array $options = []): HtmlString|string
     {
         $range = array_combine($range = range($begin, $end), $range);
 
@@ -735,7 +735,7 @@ class FormBuilder
      *
      * @return mixed
      */
-    public function selectYear(string $name, string $begin, string $end, string $selected = null, array $options = null): mixed
+    public function selectYear(string $name, string $begin, string $end, string|null $selected = null, array|null $options = null): mixed
     {
         return call_user_func_array([$this, 'selectRange'], func_get_args());
     }
@@ -750,7 +750,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function selectMonth(string $name, string $selected = null, array $options = [], string $format = 'F'): HtmlString|string
+    public function selectMonth(string $name, string|null $selected = null, array $options = [], string $format = 'F'): HtmlString|string
     {
         $months = [];
 
@@ -898,7 +898,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function radio(string $name, mixed $value = null, bool $checked = null, array $options = []): HtmlString|string
+    public function radio(string $name, mixed $value = null, bool|null $checked = null, array $options = []): HtmlString|string
     {
         if (is_null($value)) {
             $value = $name;
@@ -1050,7 +1050,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function image(string $url, string $name = null, array $attributes = []): HtmlString|string
+    public function image(string $url, string|null $name = null, array $attributes = []): HtmlString|string
     {
         $attributes['src'] = $this->url->asset($url);
 
@@ -1066,7 +1066,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function month(string $name, string|DateTimeInterface $value = null, array $options = []): HtmlString|string
+    public function month(string $name, string|DateTimeInterface|null $value = null, array $options = []): HtmlString|string
     {
         if ($value instanceof DateTimeInterface) {
             $value = $value->format('Y-m');
@@ -1084,7 +1084,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function color(string $name, string $value = null, array $options = []): HtmlString|string
+    public function color(string $name, string|null $value = null, array $options = []): HtmlString|string
     {
         return $this->input('color', $name, $value, $options);
     }
@@ -1097,7 +1097,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function submit(string $value = null, array $options = []): HtmlString|string
+    public function submit(string|null $value = null, array $options = []): HtmlString|string
     {
         return $this->input('submit', null, $value, $options);
     }
@@ -1110,7 +1110,7 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function button(string $value = null, array $options = []): HtmlString|string
+    public function button(string|null $value = null, array $options = []): HtmlString|string
     {
         if (! array_key_exists('type', $options)) {
             $options['type'] = 'button';
