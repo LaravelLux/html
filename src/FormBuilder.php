@@ -123,7 +123,7 @@ class FormBuilder
      * @param string $csrfToken
      * @param Request|null $request
      */
-    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, null|string $csrfToken = null, Request $request = null)
+    public function __construct(HtmlBuilder $html, UrlGenerator $url, Factory $view, null|string $csrfToken = null, ?Request $request = null)
     {
         $this->url = $url;
         $this->html = $html;
