@@ -899,6 +899,14 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<input class="class-a class-c" name="test" type="text">', $input);
     }
 
+    public function testInputWithEmptyLabel()
+    {
+        $this->formBuilder->label('');
+        $input = $this->formBuilder->submit('button');
+
+        $this->assertEquals('<input type="submit" value="button">', $input);
+    }
+
     protected function setModel(array $data, $object = true)
     {
         if ($object) {
