@@ -55,10 +55,10 @@ $capsule->schema()->create('models', function (Blueprint $table) {
 /*
  * Load the configuration.
  */
-$config = require __DIR__.'/config/html-forms.php';
+$GLOBALS['config'] = require __DIR__.'/config/html-forms.php';
 function config($key = null, $default = null)
 {
-    global $config;
+    $config = $GLOBALS['config'];
 
     if (is_null($key)) {
         return $config;

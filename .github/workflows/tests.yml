@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.0', laravel: '6', phpunit: '9.6' }
+          - { php: '8.0', laravel: '7', phpunit: '9.6' }
+          - { php: '8.0', laravel: '8', phpunit: '9.6' }
+          - { php: '8.1', laravel: '9', phpunit: '9.6' }
+          - { php: '8.2', laravel: '10', phpunit: '10' }
+          - { php: '8.3', laravel: '11', phpunit: '11' }
+          - { php: '8.4', laravel: '12', phpunit: '12' }
+          - { php: '8.4', laravel: '13', phpunit: '12' }
+          - { php: '8.5', laravel: '13', phpunit: '12' }
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo_sqlite, sqlite3, xml
+          coverage: none
+          tools: composer:v2
+      - name: Install dependencies
+        run: |
+          composer update --no-interaction --prefer-dist --no-progress \
+            --with "illuminate/http:^${{ matrix.laravel }}" \
+            --with "illuminate/routing:^${{ matrix.laravel }}" \
+            --with "illuminate/session:^${{ matrix.laravel }}" \
+            --with "illuminate/support:^${{ matrix.laravel }}" \
+            --with "illuminate/view:^${{ matrix.laravel }}" \
+            --with "illuminate/database:^${{ matrix.laravel }}" \
+            --with "phpunit/phpunit:^${{ matrix.phpunit }}"
+      - name: Run tests
+        run: vendor/bin/phpunit

@@ -40,6 +40,13 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<dl class="example"><dt>foo</dt><dd>bar</dd><dt>bing</dt><dd>baz</dd></dl>', $result);
     }
 
+    public function testDlEscapesKeysAndValues()
+    {
+        $result = $this->htmlBuilder->dl(['<script>alert(1)</script>' => '<b>unsafe & text</b>']);
+
+        $this->assertSame('<dl><dt>&lt;script&gt;alert(1)&lt;/script&gt;</dt><dd>&lt;b&gt;unsafe &amp; text&lt;/b&gt;</dd></dl>', (string) $result);
+    }
+
     public function testOl()
     {
         $list = ['foo', 'bar', '&amp;'];
@@ -60,6 +67,13 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
         $ul = $this->htmlBuilder->ul($list, $attributes);
 
         $this->assertEquals('<ul class="example"><li>foo</li><li>bar</li><li>&amp;</li></ul>', $ul);
+    }
+
+    public function testNestedListEscapesLabel()
+    {
+        $result = $this->htmlBuilder->ul(['<b>unsafe</b>' => ['safe']]);
+
+        $this->assertSame('<ul><li>&lt;b&gt;unsafe&lt;/b&gt;<ul><li>safe</li></ul></li></ul>', (string) $result);
     }
 
     public function testMeta()
@@ -142,6 +156,18 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals('<a href="mailto:person@example.com" class="example-link"><span>First Name Last</span></a>', $result2);
     }
 
+    public function testMailtoEscapesEmailInHref()
+    {
+        $htmlBuilder = m::mock('LaravelLux\\Html\\HtmlBuilder[obfuscate,email]', [$this->urlGenerator, $this->viewFactory]);
+        $htmlBuilder->shouldReceive('obfuscate', 'email')->andReturnUsing(function () {
+            return func_get_args()[0];
+        });
+
+        $result = $htmlBuilder->mailto('person" onclick="alert(1)@example.com', 'Contact');
+
+        $this->assertSame('<a href="mailto:person&quot; onclick=&quot;alert(1)@example.com">Contact</a>', (string) $result);
+    }
+
     public function testBooleanAttributes()
     {
         $result1 = $this->htmlBuilder->attributes(['my-property' => true]);
@@ -165,5 +191,64 @@ class HtmlBuilderTest extends PHPUnit\Framework\TestCase
         ]]);
 
         $this->assertEquals('class="class-a class-c"', trim($result));
+    }
+
+    public function testArrayClassAttributesAreEscaped()
+    {
+        $result = $this->htmlBuilder->attributes(['class' => ['safe', 'bad" onmouseover="alert(1)', 'a&b']]);
+
+        $this->assertSame(' class="safe bad&quot; onmouseover=&quot;alert(1) a&amp;b"', $result);
+    }
+
+    public function testDefaultClassMergesWithStringClass()
+    {
+        $previous = $GLOBALS['config']['default_attributes']['all']['class'];
+        $GLOBALS['config']['default_attributes']['all']['class'] = ['base'];
+
+        try {
+            $this->assertSame(' class="base extra"', $this->htmlBuilder->attributes(['class' => 'extra']));
+        } finally {
+            $GLOBALS['config']['default_attributes']['all']['class'] = $previous;
+        }
+    }
+
+    public function testAssociativeDefaultClassesRespectConfiguredRules()
+    {
+        $previous = $GLOBALS['config']['default_attributes']['all'];
+        $GLOBALS['config']['default_attributes']['all'] = [
+            'class' => ['always' => false, 'fallback' => true],
+            'data-mode' => ['default' => true],
+        ];
+
+        try {
+            $this->assertSame(' class="always custom" data-mode="custom"', $this->htmlBuilder->attributes([
+                'class' => 'custom',
+                'data-mode' => 'custom',
+            ]));
+            $this->assertSame(' class="always fallback" data-mode="default"', $this->htmlBuilder->attributes([]));
+        } finally {
+            $GLOBALS['config']['default_attributes']['all'] = $previous;
+        }
+    }
+
+    public function testNumericAttributesAcceptOnlyAttributeNames()
+    {
+        $result = $this->htmlBuilder->attributes(['required', 'aria-label', 'disabled onclick="alert(1)"', '<script>']);
+
+        $this->assertSame(' required aria-label', $result);
+    }
+
+    public function testInvalidAttributeNamesAreOmitted()
+    {
+        $result = $this->htmlBuilder->attributes(['name" onclick="alert(1)' => 'value', 'data-safe' => 'yes']);
+
+        $this->assertSame(' data-safe="yes"', $result);
+    }
+
+    public function testImageSourceIsEscaped()
+    {
+        $result = $this->htmlBuilder->image('https://example.com/picture.png?title=" onclick="alert(1)&size=large');
+
+        $this->assertSame('<img src="https://example.com/picture.png?title=&quot; onclick=&quot;alert(1)&amp;size=large">', (string) $result);
     }
 }

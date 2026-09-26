@@ -308,6 +308,7 @@ class FormBuilder
      * @param string|null $name
      * @param string|null $value
      * @param array $options
+     * @param bool $escape
      *
      * @return string|HtmlString
      */
@@ -1110,11 +1111,13 @@ class FormBuilder
      *
      * @return HtmlString|string
      */
-    public function button(string|null $value = null, array $options = []): HtmlString|string
+    public function button(string|null $value = null, array $options = [], bool $escape = true): HtmlString|string
     {
         if (! array_key_exists('type', $options)) {
             $options['type'] = 'button';
         }
+
+        $value = $escape ? e($value ?? '', false) : ($value ?? '');
 
         return $this->toHtmlString('<button' . $this->html->attributes($options, 'button') . '>' . $value . '</button>');
     }

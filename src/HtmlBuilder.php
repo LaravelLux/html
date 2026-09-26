@@ -116,8 +116,8 @@ class HtmlBuilder
     {
         $attributes['alt'] = $alt;
 
-        return $this->toHtmlString('<img src="' . $this->url->asset($url,
-            $secure) . '"' . $this->attributes($attributes) . '>');
+        return $this->toHtmlString('<img src="' . $this->entities($this->url->asset($url,
+            $secure)) . '"' . $this->attributes($attributes) . '>');
     }
 
     /**
@@ -270,7 +270,7 @@ class HtmlBuilder
 
         $email = $this->obfuscate('mailto:') . $email;
 
-        return $this->toHtmlString('<a href="' . $email . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
+        return $this->toHtmlString('<a href="' . $this->entities($email) . '"' . $this->attributes($attributes) . '>' . $title . '</a>');
     }
 
     /**
@@ -340,10 +340,10 @@ class HtmlBuilder
         foreach ($list as $key => $value) {
             $value = (array) $value;
 
-            $html .= "<dt>$key</dt>";
+            $html .= '<dt>' . e($key, false) . '</dt>';
 
             foreach ($value as $v_value) {
-                $html .= "<dd>$v_value</dd>";
+                $html .= '<dd>' . e($v_value, false) . '</dd>';
             }
         }
 
@@ -413,7 +413,7 @@ class HtmlBuilder
         if (is_int($key)) {
             return $this->listing($type, $value);
         } else {
-            return '<li>' . $key . $this->listing($type, $value) . '</li>';
+            return '<li>' . e($key, false) . $this->listing($type, $value) . '</li>';
         }
     }
 
@@ -436,11 +436,29 @@ class HtmlBuilder
                     continue;
                 }
                 if ($attribute_name === "class") {
-                    $attributes['class'] = [...$attribute_value, ...$attributes['class'] ?? []];
+                    $classes = $attributes['class'] ?? [];
+                    $classes = is_array($classes) ? $classes : [$classes];
+                    $defaults = [];
+
+                    foreach ($attribute_value as $class_name => $only_if_missing) {
+                        if (is_int($class_name)) {
+                            $defaults[] = $only_if_missing;
+                        } elseif (!$only_if_missing || empty($classes)) {
+                            $defaults[] = $class_name;
+                        }
+                    }
+
+                    $attributes['class'] = [...$defaults, ...$classes];
                 } else {
-                    $attributes[$attribute_name] = is_array($attribute_value) && !$attribute_value[0]
-                        ? array_key_first($attribute_value)
-                        : $attribute_value;
+                    if (is_array($attribute_value)) {
+                        $default_value = array_key_first($attribute_value);
+                        $only_if_missing = $attribute_value[$default_value];
+                        if (!$only_if_missing || !isset($attributes[$attribute_name])) {
+                            $attributes[$attribute_name] = $default_value;
+                        }
+                    } else {
+                        $attributes[$attribute_name] = $attribute_value;
+                    }
                 }
             }
         }
@@ -488,7 +506,13 @@ class HtmlBuilder
         // This will convert HTML attributes such as "required" to a correct
         // form instead of using incorrect numerics.
         if (is_numeric($key)) {
-            return $value;
+            return is_string($value) && preg_match('/^[^\x00-\x20\x7F"\'<>\/=]+$/D', $value)
+                ? $value
+                : null;
+        }
+
+        if (!preg_match('/^[^\x00-\x20\x7F"\'<>\/=]+$/D', $key)) {
+            return null;
         }
 
         // Treat boolean attributes as HTML properties
@@ -497,7 +521,7 @@ class HtmlBuilder
         }
 
         if (is_array($value) && $key === 'class') {
-            return 'class="' . implode(' ', $value) . '"';
+            return 'class="' . e(implode(' ', $value), false) . '"';
         }
 
         if($ignore_empty || !empty($value) || ($allow_boolean && $value == "0")){
