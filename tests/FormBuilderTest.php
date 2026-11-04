@@ -242,6 +242,20 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($input1, $input2);
     }
 
+    public function testFormTextEmptyValues()
+    {
+        $this->setModel(['foo' => '0', 'bar' => 0, 'baz' => null, 'qux' => '']);
+        $form1 = $this->formBuilder->text('foo');
+        $form2 = $this->formBuilder->text('bar');
+        $form3 = $this->formBuilder->text('baz');
+        $form4 = $this->formBuilder->text('qux');
+        
+        $this->assertEquals('<input name="foo" type="text" value="0">', $form1);
+        $this->assertEquals('<input name="bar" type="text" value="0">', $form2);
+        $this->assertEquals('<input name="baz" type="text">', $form3);
+        $this->assertEquals('<input name="qux" type="text">', $form4);
+    }
+
     public function testFormRepopulationWithMixOfArraysAndObjects()
     {
         $this->formBuilder->model(['user' => (object) ['password' => 'apple']]);
@@ -333,11 +347,13 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
     {
         $form1 = $this->formBuilder->number('foo');
         $form2 = $this->formBuilder->number('foo', 1);
-        $form3 = $this->formBuilder->number('foo', null, ['class' => 'span2']);
+        $form3 = $this->formBuilder->number('foo', 0);
+        $form4 = $this->formBuilder->number('foo', null, ['class' => 'span2']);
 
         $this->assertEquals('<input name="foo" type="number">', $form1);
         $this->assertEquals('<input name="foo" type="number" value="1">', $form2);
-        $this->assertEquals('<input class="span2" name="foo" type="number">', $form3);
+        $this->assertEquals('<input name="foo" type="number" value="0">', $form3);
+        $this->assertEquals('<input class="span2" name="foo" type="number">', $form4);
     }
 
     public function testFormDate()

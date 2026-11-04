@@ -524,7 +524,7 @@ class HtmlBuilder
             return 'class="' . e(implode(' ', $value), false) . '"';
         }
 
-        if($ignore_empty || !empty($value) || ($allow_boolean && $value == "0")){
+        if($ignore_empty || ($value !== null && $value !== '') || ($allow_boolean && $value == "0")){
             return $key . '="' . e($value ?? '', false) . '"';
         }
         return null;
