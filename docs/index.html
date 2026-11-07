@@ -43,6 +43,7 @@
                         <li class="hover:bg-gray-300"><a href="#form-model-accessors" class="block py-1 px-2 text-gray-900">Form Model Accessors</a></li>
                         <li class="hover:bg-gray-300"><a href="#labels" class="block py-1 px-2 text-gray-900">Labels</a></li>
                         <li class="hover:bg-gray-300"><a href="#text" class="block py-1 px-2 text-gray-900">Text, Text Area, Password &amp; Hidden Fields</a></li>
+                        <li class="hover:bg-gray-300"><a href="#validation-aware-fields" class="block py-1 px-2 text-gray-900">Validation-Aware Fields</a></li>
                         <li class="hover:bg-gray-300"><a href="#checkboxes" class="block py-1 px-2 text-gray-900">Checkboxes</a></li>
                         <li class="hover:bg-gray-300"><a href="#radio-buttons" class="block py-1 px-2 text-gray-900">Radio Buttons</a></li>
                         <li class="hover:bg-gray-300"><a href="#file-input" class="block py-1 px-2 text-gray-900">File Input</a></li>
@@ -295,6 +296,19 @@ class User extends Model
                     <button class="md:inline hidden copyBtn absolute right-2 top-2" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#code21">
                     </button>
                 </div>
+
+                <a id="validation-aware-fields"></a>
+                <div class="font-bold text-2xl mt-10">Validation-Aware Fields</div>
+                <p class="my-2">Use <code>Form::field</code> when you want a label, input, and validation message from one call. It renders a text input by default; use the <code>type</code> option for another HTML <code>&lt;input&gt;</code> type, such as <code>email</code>. For a textarea or select, use the dedicated form helpers instead.</p>
+                <div class="relative my-2 bg-gray-800 text-white rounded-md pr-10">
+                    <pre class="p-2 overflow-x-auto"><code id="code49">{!! Form::field('email', 'Email', [
+    'type' => 'email',
+    'attributes' => ['class' => 'form-control'],
+]) !!}</code></pre>
+                    <button class="md:inline hidden copyBtn absolute right-2 top-2" aria-label="Copy to Clipboard" title="Copy to Clipboard" data-clipboard-target="#code49"></button>
+                </div>
+                <p class="my-2">The label points to the input's ID, which is generated from its name unless you set <code>attributes.id</code>. When the field has a validation error, the first message appears in a span, the input receives <code>aria-invalid="true"</code>, and the message ID is added to <code>aria-describedby</code>. Without an error, no error span or error ARIA attributes are added.</p>
+                <p class="my-2">Errors come from Laravel's shared view errors by default. Use <code>errors</code> to supply a <code>MessageBag</code> or <code>ViewErrorBag</code>, and <code>error_bag</code> to select a named bag. The <code>value</code>, <code>label_attributes</code>, and <code>error_attributes</code> options customize the field's value, label, and message span.</p>
 
                 <a id="checkboxes"></a>
                 <div class="font-bold text-2xl mt-10">Checkboxes</div>

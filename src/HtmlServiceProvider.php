@@ -41,6 +41,7 @@ class HtmlServiceProvider extends ServiceProvider implements DeferrableProvider
         'label',
         'input',
         'text',
+        'field',
         'password',
         'hidden',
         'email',

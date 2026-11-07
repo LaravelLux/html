@@ -10,6 +10,8 @@
 
 Official documentation for Forms & Html for The Laravel Framework can be found at the [Laravel Lux by WebSE](https://website.com.se/) website.
 
+For a label, input, and connected validation message in one call, use the optional [`Form::field` helper](docs/index.html#validation-aware-fields).
+
 ## Supported versions
 
 The 7.x release accepts PHP 8.0 or newer and Laravel 6 through 13, where those versions' own dependencies allow the combination. We maintain compatibility with older versions in the package constraints and test it in CI. See the [PHP support schedule](https://www.php.net/supported-versions.php) and [Laravel support policy](https://laravel.com/framework/docs/releases) for upstream security support dates.

@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
+use Illuminate\Contracts\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 use Illuminate\Support\Traits\Macroable;
 
 class FormBuilder
@@ -351,6 +353,59 @@ class FormBuilder
     public function text(string $name, string|null $value = null, array $options = []): string|HtmlString
     {
         return $this->input('text', $name, $value, $options);
+    }
+
+    /**
+     * Render a labelled input and its first validation error, if present.
+     *
+     * Options: type, value, attributes, label_attributes, error_attributes,
+     * errors (a MessageBag or ViewErrorBag), and error_bag.
+     */
+    public function field(string $name, ?string $label = null, array $options = []): HtmlString
+    {
+        $attributes = $options['attributes'] ?? [];
+        $id = $attributes['id'] ?? preg_replace('/[^A-Za-z0-9_-]+/', '_', $name);
+        $id = (string) ($id ?: 'field');
+        $attributes['id'] = $id;
+
+        $errors = array_key_exists('errors', $options)
+            ? $options['errors']
+            : $this->view->shared('errors');
+
+        if ($errors instanceof ViewErrorBag) {
+            $errors = $errors->getBag($options['error_bag'] ?? 'default');
+        }
+
+        $errorKey = rtrim(str_replace(['[', ']'], ['.', ''], $name), '.');
+        $error = $errors instanceof MessageBag ? $errors->first($errorKey) : '';
+
+        if ($error !== '') {
+            $errorId = $id . '-error';
+            $describedBy = trim((string) ($attributes['aria-describedby'] ?? ''));
+            $descriptionIds = preg_split('/\s+/', $describedBy, -1, PREG_SPLIT_NO_EMPTY);
+            if (!in_array($errorId, $descriptionIds, true)) {
+                $descriptionIds[] = $errorId;
+            }
+            $attributes['aria-describedby'] = implode(' ', $descriptionIds);
+            $attributes['aria-invalid'] = 'true';
+        }
+
+        $labelAttributes = $options['label_attributes'] ?? [];
+        $labelAttributes['for'] = $id;
+        $labelHtml = '<label' . $this->html->attributes($labelAttributes, 'label') . '>'
+            . $this->html->entities($this->formatLabel($name, $label)) . '</label>';
+
+        $inputHtml = $this->input($options['type'] ?? 'text', $name, $options['value'] ?? null, $attributes);
+
+        $errorHtml = '';
+        if ($error !== '') {
+            $errorAttributes = $options['error_attributes'] ?? [];
+            $errorAttributes['id'] = $errorId;
+            $errorHtml = '<span' . $this->html->attributes($errorAttributes, 'span') . '>'
+                . $this->html->entities($error) . '</span>';
+        }
+
+        return $this->toHtmlString($labelHtml . $inputHtml . $errorHtml);
     }
 
     /**

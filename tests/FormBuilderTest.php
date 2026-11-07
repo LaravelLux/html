@@ -9,6 +9,8 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 use Illuminate\Support\Facades\App;
 use Illuminate\Session\Store;
 use Mockery as m;
@@ -208,6 +210,59 @@ class FormBuilderTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($form1, $form2);
         $this->assertEquals('<input name="foo" type="text" value="foobar">', $form3);
         $this->assertEquals('<input class="span2" name="foo" type="text">', $form4);
+    }
+
+    public function testFieldWithoutErrors()
+    {
+        $this->viewFactory->shouldReceive('shared')->with('errors')->once()->andReturn(null);
+
+        $field = $this->formBuilder->field('email', 'Email address', [
+            'type' => 'email',
+            'attributes' => ['required' => true],
+        ]);
+
+        $this->assertEquals('<label for="email">Email address</label><input required id="email" name="email" type="email">', $field);
+    }
+
+    public function testFieldConnectsNestedValidationErrorAndPreservesDescription()
+    {
+        $errors = new ViewErrorBag();
+        $errors->put('default', new MessageBag(['person.email' => ['Invalid <email>']]));
+        $this->viewFactory->shouldReceive('shared')->with('errors')->once()->andReturn($errors);
+
+        $field = $this->formBuilder->field('person[email]', 'Email', [
+            'type' => 'email',
+            'attributes' => ['id' => 'contact-email', 'aria-describedby' => 'email-help'],
+            'error_attributes' => ['class' => 'error'],
+        ]);
+
+        $this->assertEquals('<label for="contact-email">Email</label><input id="contact-email" aria-describedby="email-help contact-email-error" aria-invalid="true" name="person[email]" type="email"><span class="error" id="contact-email-error">Invalid &lt;email&gt;</span>', $field);
+    }
+
+    public function testFieldAcceptsMessageBagWithoutSharedViewErrors()
+    {
+        $this->viewFactory->shouldNotReceive('shared');
+
+        $field = $this->formBuilder->field('email', null, [
+            'value' => 'someone@example.com',
+            'errors' => new MessageBag(['email' => ['Invalid address']]),
+        ]);
+
+        $this->assertEquals('<label for="email">Email</label><input id="email" aria-describedby="email-error" aria-invalid="true" name="email" type="text" value="someone@example.com"><span id="email-error">Invalid address</span>', $field);
+    }
+
+    public function testFieldAcceptsExplicitNamedErrorBagAndEscapesLabelAndId()
+    {
+        $errors = new ViewErrorBag();
+        $errors->put('profile', new MessageBag(['nickname' => ['Required']]));
+
+        $field = $this->formBuilder->field('nickname', '<Nickname>', [
+            'errors' => $errors,
+            'error_bag' => 'profile',
+            'attributes' => ['id' => 'nick"name', 'aria-describedby' => 'nick"name-error'],
+        ]);
+
+        $this->assertEquals('<label for="nick&quot;name">&lt;Nickname&gt;</label><input id="nick&quot;name" aria-describedby="nick&quot;name-error" aria-invalid="true" name="nickname" type="text"><span id="nick&quot;name-error">Required</span>', $field);
     }
 
     public function testFormTextArray()
