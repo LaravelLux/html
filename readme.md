@@ -14,6 +14,6 @@ For a label, input, and connected validation message in one call, use the option
 
 ## Supported versions
 
-The 7.x release accepts PHP 8.0 or newer and Laravel 6 through 13, where those versions' own dependencies allow the combination. We maintain compatibility with older versions in the package constraints and test it in CI. See the [PHP support schedule](https://www.php.net/supported-versions.php) and [Laravel support policy](https://laravel.com/framework/docs/releases) for upstream security support dates.
+The 7.x branch permits PHP 8.0 or newer and Laravel 9 through 13, where upstream dependencies allow the combination. CI tests Laravel 12 and 13 on PHP 8.2–8.5. Older PHP/Laravel combinations are no longer tested, and Composer may block their dependencies due to security advisories; we do not recommend using them in production. See the [PHP support schedule](https://www.php.net/supported-versions.php) and [Laravel support policy](https://laravel.com/docs/releases) for upstream security support dates.
 
 Button labels are HTML-escaped by default. For trusted HTML markup, pass `false` as the third argument to `Form::button($label, $options, false)`.
